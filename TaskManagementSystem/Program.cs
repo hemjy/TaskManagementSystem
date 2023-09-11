@@ -1,7 +1,9 @@
 using Hangfire;
+using Microsoft.AspNetCore.Builder;
 using Serilog;
 using TaskManagementSystem;
 using TaskManagementSystem.Middlewares;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +32,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.EnsureDatabaseSetup();
 }
+app.UseExceptionHandler();
 app.UseHangfireDashboard("/jobs");
-app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

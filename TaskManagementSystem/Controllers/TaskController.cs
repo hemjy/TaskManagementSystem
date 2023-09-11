@@ -28,8 +28,7 @@ namespace TaskManagementSystem.Controllers
         {
             return Ok(await _taskService.GetTasksDueForCurrentWeekAsync(pageNumber, pageSize));
         }
-        [HttpPut("assignorremove")]
-        [ProducesResponseType(typeof(PagedList<TaskToReturn>), StatusCodes.Status200OK)]
+        [HttpPut("assignorremoveproject")]
         public async Task<IActionResult> AssignOrRemove(TaskAction payload)
         {
             await _taskService.AssignOrRemoveToProject(payload);

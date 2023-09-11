@@ -13,7 +13,7 @@ using TaskManagementSystem.Test.IntegrationTest.Base;
 
 namespace TaskManagementSystem.Test.IntegrationTest
 {
-    public class NotificationControllerTest : TMSBaseTest<TaskController>
+    public class NotificationControllerTest : TMSBaseTest<NotificationController>
     {
         private readonly AppDbContext _context;
         public NotificationControllerTest()

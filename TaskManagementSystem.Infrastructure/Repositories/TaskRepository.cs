@@ -22,43 +22,43 @@ namespace TaskManagementSystem.Infrastructure.Repositories
             
             IQueryable<Core.Entities.Task> query = _context.Tasks;
 
-            if (Enum.TryParse(status.ToString(), true, out Status parsedStatus))
-            {
-                query = query.Where(t => t.Status == parsedStatus);
-            }
+            var statusParsed = Enum.TryParse(status.ToString(), true, out Status parsedStatus);
+            var priorityParsed = Enum.TryParse(priority.ToString(), true, out Priority parsedPriority);
 
-            if (Enum.TryParse(priority.ToString(), true, out Priority parsedPriority))
-            {
-                query = query.Where(t => t.Priority == parsedPriority);
-            }
+            query = query.Where(t =>
+                (statusParsed && t.Status == parsedStatus) ||
+                (priorityParsed && t.Priority == parsedPriority)
+            );
 
             var count = await query.CountAsync();
 
             // map Task to TaskToReturn 
             var tasks = await query
-                         .Include(x => x.UserCreated)
                          .GroupJoin(
-                             query.Include(x => x.Project),
-                             task => task.ProjectId,
-                             project => project.ProjectId,
-                             (task, projectGroup) => new { task, projectGroup }
-                         )
-                         .SelectMany(
-                             x => x.projectGroup.DefaultIfEmpty(),
-                             (x, project) => new TaskToReturn
-                             {
-                                 Id = x.task.TaskId,
-                                 Status = x.task.Status,
-                                 Priority = x.task.Priority,
-                                 Description = x.task.Description,
-                                 DueDate = x.task.DueDate,
-                                 ProjectId = project != null ? project.ProjectId : Guid.Empty,
-                                 ProjectName = project != null ? project.Title : string.Empty,
-                                 Created = x.task.UserCreated.Name,
-                                 Title = x.task.Title,
-                                 UserId = x.task.CreatedId,
-                             }
-                         )
+                                _context.Projects,
+                                task => task.ProjectId,
+                                project => project.ProjectId,
+                                (task, projects) => new { Task = task, Projects = projects })
+                            .SelectMany(
+                                joinResult => joinResult.Projects.DefaultIfEmpty(),
+                                (joinResult, project) => new { Task = joinResult.Task, Project = project })
+                            .Join(
+                                _context.Users,
+                                result => result.Task.CreatedId,
+                                user => user.UserId,
+                                (x, user) => new TaskToReturn
+                                {
+                                    Id = x.Task.TaskId,
+                                    Status = x.Task.Status,
+                                    Priority = x.Task.Priority,
+                                    Description = x.Task.Description,
+                                    DueDate = x.Task.DueDate,
+                                    ProjectId = x.Project != null ? x.Project.ProjectId : Guid.Empty,
+                                    ProjectName = x.Project != null ? x.Project.Name : string.Empty,
+                                    Created = x.Task.UserCreated.Name,
+                                    Title = x.Task.Title,
+                                    UserId = x.Task.CreatedId,
+                                })
                          .Skip((pageNumber - 1) * pageSize)
                          .Take(pageSize)
                          .AsNoTracking()
