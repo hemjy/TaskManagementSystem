@@ -16,6 +16,7 @@ Here are the tools required to start the application:
 
 - **Dotnet 7 SDK**: This project was developed using .NET 7. You can download it from https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 - **Dotnet EF**: This project uses EF code-first approach, to run migrations. Run the following command:
+- **Sql Server**: This project uses Sql Server database.
 ```
 dotnet ef migrations add migrationMessage -c AppDbContext -p "yourlocalpath\src\TaskManagementSystem.Infrastructure\TaskManagementSystem.Infrastructure.csproj" -s "yourlocalpath\TaskManagementSystem\TaskManagementSystem\Infrastructure.csproj" -o Data/Migrations
 ```
@@ -27,8 +28,9 @@ For further documentation, study https://learn.microsoft.com/en-us/ef/core/cli/d
 To run the application, follow these steps:
 
 
-1. Clone the project to your local machine.
-2. Navigate to the project's root folder and run `dotnet restore` to restore dependencies.
-3. Run `dotnet test` to run the tests alone.
-4. If the tests run successfully, proceed to run the application.
-5. To start the application, run the command: `dotnet run`
+1. Install Microsoft Sql Server database. You can download it from https://www.microsoft.com/en-us/sql-server/sql-server-downloads. you can also use docker by running `docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=<your-password>" -p 1433:1433 --name sqlserver-container -d mcr.microsoft.com/mssql/server `
+2. Clone the project to your local machine.
+3. Navigate to the project's root folder and run `dotnet restore` to restore dependencies.
+4. Run `dotnet test` to run the tests alone.
+5. If the tests run successfully, proceed to run the application.
+6. To start the application, Set your connectionString in the appsetting file then  run the command: `dotnet run`
