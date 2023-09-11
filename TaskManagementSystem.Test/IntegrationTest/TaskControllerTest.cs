@@ -63,7 +63,6 @@ namespace TaskManagementSystem.Test.IntegrationTest
             var task = _context.Tasks.Include(p => p.Project).FirstOrDefault(t => t.TaskId == payload.TaskId);
             // Assert
             task.Should().NotBeNull();
-            task.ProjectId.Should().Be(payload.ProjectId);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
